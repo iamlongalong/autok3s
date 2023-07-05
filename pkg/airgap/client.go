@@ -71,6 +71,9 @@ func init() {
 	// domain:proxy,domain:proxy
 	proxyStrLists := os.Getenv("AUTOK3S_PROXY")
 	for _, proxyMatchersStr := range strings.Split(proxyStrLists, ",") {
+		if strings.TrimSpace(proxyMatchersStr) == "" {
+			continue
+		}
 
 		proxyStrSlis := strings.Split(proxyMatchersStr, ":")
 		if len(proxyStrSlis) != 2 {

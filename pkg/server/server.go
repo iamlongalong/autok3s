@@ -8,6 +8,7 @@ import (
 
 	"github.com/cnrancher/autok3s/pkg/server/proxy"
 	"github.com/cnrancher/autok3s/pkg/server/ui"
+	"github.com/sirupsen/logrus"
 
 	"github.com/gorilla/mux"
 	responsewriter "github.com/rancher/apiserver/pkg/middleware"
@@ -117,16 +118,12 @@ func AuthMiddleware(next http.Handler) http.Handler {
 
 		if !shouldSkipAuth {
 			uname, passwd, ok := r.BasicAuth()
-			if !ok {
-				rw.Header().Set("WWW-Authenticate", `Basic realm="Restricted"`)
-				rw.WriteHeader(http.StatusUnauthorized)
-				return
-			}
 
-			passwd = string(md5.New().Sum([]byte(magicSalt + passwd)))
+			tarpasswd := string(md5.New().Sum([]byte(magicSalt + passwd)))
 
-			pass, ok := auths[uname]
-			if !ok || pass != passwd {
+			pass := auths[uname]
+			if !ok || pass != tarpasswd {
+				logrus.Warn("just for test ", uname, passwd, pass, tarpasswd)
 				rw.Header().Set("WWW-Authenticate", `Basic realm="Restricted"`)
 				rw.WriteHeader(http.StatusUnauthorized)
 				return
