@@ -66,7 +66,7 @@ func (dm *DomainMatcher) Match(urlstr string) bool {
 	host := u.Hostname()
 
 	for _, domain := range dm.Domains {
-		fmt.Println("<<<<<< run to match : ", domain, host)
+		// fmt.Println("<<<<<< run to match : ", domain, host)
 		if strings.HasSuffix(host, domain) {
 			return true
 		}
@@ -107,7 +107,7 @@ func init() {
 			continue
 		}
 
-		fmt.Println("<<<<< set domain ", domainURL.Hostname(), proxyURL)
+		// fmt.Println("<<<<< set domain ", domainURL.Hostname(), proxyURL)
 		dfClientHub.Set(&DomainMatcher{Domains: []string{domainURL.Hostname()}}, http.Client{
 			Transport: &http.Transport{
 				Proxy: http.ProxyURL(proxyURL),
