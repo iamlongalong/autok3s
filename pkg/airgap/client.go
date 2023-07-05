@@ -40,7 +40,8 @@ func (ch *clientHub) Get(urlstr string) http.Client {
 	}
 
 	for _, client := range ch.clients {
-		if client.m.Match(u.Host) {
+		fmt.Printf("<<<<<<< start to match : %+v, %s\n", client.c.Transport, u.Hostname())
+		if client.m.Match(u.Hostname()) {
 			logrus.Infof("matched domain: %s", urlstr)
 			return client.c
 		}
@@ -65,6 +66,7 @@ func (dm *DomainMatcher) Match(urlstr string) bool {
 	host := u.Hostname()
 
 	for _, domain := range dm.Domains {
+		fmt.Println("<<<<<< run to match : ", domain, host)
 		if strings.HasSuffix(host, domain) {
 			return true
 		}
@@ -105,7 +107,8 @@ func init() {
 			continue
 		}
 
-		dfClientHub.Set(&DomainMatcher{Domains: []string{domainURL.Host}}, http.Client{
+		fmt.Println("<<<<< set domain ", domainURL.Hostname(), proxyURL)
+		dfClientHub.Set(&DomainMatcher{Domains: []string{domainURL.Hostname()}}, http.Client{
 			Transport: &http.Transport{
 				Proxy: http.ProxyURL(proxyURL),
 			},
