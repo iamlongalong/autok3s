@@ -1,15 +1,3 @@
-<div align="center">
-  <h1>AutoK3s</h1>
-  <p>
-    <a href="https://drone-pandaria.cnrancher.com/cnrancher/pandaria"><img alt="Build Status" src="http://drone-pandaria.cnrancher.com/api/badges/cnrancher/autok3s/status.svg"></a>
-    <a href="https://goreportcard.com/report/github.com/cnrancher/autok3s"><img alt="Go Report Card" src="https://goreportcard.com/badge/github.com/cnrancher/autok3s"></a>
-    <a href="https://github.com/cnrancher/autok3s/releases"><img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/cnrancher/autok3s?color=default&label=release&logo=github"></a>
-    <a href="https://github.com/cnrancher/autok3s/releases"><img alt="GitHub release (latest by date including pre-releases)" src="https://img.shields.io/github/v/release/cnrancher/autok3s?include_prereleases&label=pre-release&logo=github"></a>
-  </p>
-</div>
-
-<hr />
-
 ## What is AutoK3s
 
 English / [简体中文](docs/i18n/zh_cn/README.md)
@@ -20,6 +8,7 @@ AutoK3s is a lightweight tool for simplifying the cluster management of K3s, it 
 
 <!-- toc -->
 
+- [LongFeatures](#long-features)
 - [Key Features](#key-features)
 - [Providers](#providers)
 - [Quick Start (tl;dr)](#quick-start-tldr)
@@ -29,6 +18,22 @@ AutoK3s is a lightweight tool for simplifying the cluster management of K3s, it 
 - [License](#license)
 
 <!-- /toc -->
+
+## LongFeatures
+
+这是 longalong 根据自己的需要修改过的一个版本，主要增加了以下特性:
+
+- 增加 api 的 auth 能力，由环境变量控制。
+  - AUTOK3S_AUTH_TOGGLE 控制是否关闭 auth 能力，默认为开启
+  - AUTH_username=passwd 的方式注册访问用户，但需要注意，为了一定程度上保证安全性，password 是经过处理后的
+- 增加控制 providers 是否开放的能力，由环境变量控制。
+  - AUTOK3S_PROVIDERS=native,alibaba,aws,google,k3d,tencent 如这种格式
+  - 默认为开放所有 providers
+
+修复了如下问题:
+
+- [x] fix cluster 无 PublicIPAddress 时访问越界崩溃问题，使用 InternalIPAddress 替代
+
 
 ## Key Features
 

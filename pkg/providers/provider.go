@@ -2,6 +2,8 @@ package providers
 
 import (
 	"fmt"
+	"os"
+	"strings"
 	"sync"
 
 	"github.com/cnrancher/autok3s/pkg/types"
@@ -83,8 +85,40 @@ type Provider interface {
 	UpgradeK3sCluster(clusterName, installScript, channel, version, packageName, packagePath string) error
 }
 
+var allowProviders = []string{}
+
+func init() {
+	providersStr := os.Getenv("AUTOK3S_PROVIDERS")
+	if providersStr != "" {
+		oriAllowProviders := strings.Split(providersStr, ",")
+		for _, provider := range oriAllowProviders {
+			provider = strings.TrimSpace(provider)
+			if provider == "" {
+				continue
+			}
+			allowProviders = append(allowProviders, provider)
+		}
+	} else {
+		allowProviders = []string{"native", "alibaba", "aws", "google", "k3d", "tencent"}
+	}
+}
+
+func allowRegister(name string) bool {
+	for _, p := range allowProviders {
+		if p == name {
+			return true
+		}
+	}
+	return false
+}
+
 // RegisterProvider registers a provider.Factory by name.
 func RegisterProvider(name string, p Factory) {
+	if !allowRegister(name) {
+		logrus.Debug("register provider [%s] fail of whitelist", name)
+		return
+	}
+
 	providersMutex.Lock()
 	defer providersMutex.Unlock()
 	if _, found := providers[name]; !found {

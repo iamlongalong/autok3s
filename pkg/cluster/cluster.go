@@ -770,7 +770,12 @@ func (p *ProviderBase) Upgrade(cluster *types.Cluster) error {
 	publicIP := cluster.IP
 	if cluster.IP == "" {
 		cluster.IP = cluster.MasterNodes[0].InternalIPAddress[0]
-		publicIP = cluster.MasterNodes[0].PublicIPAddress[0]
+
+		if len(cluster.MasterNodes[0].PublicIPAddress) > 0 {
+			publicIP = cluster.MasterNodes[0].PublicIPAddress[0]
+		} else {
+			publicIP = cluster.MasterNodes[0].InternalIPAddress[0]
+		}
 	}
 
 	// upgrade server nodes
