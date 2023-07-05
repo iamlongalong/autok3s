@@ -12,7 +12,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"time"
 
 	"github.com/cnrancher/autok3s/pkg/common"
 	"github.com/cnrancher/autok3s/pkg/settings"
@@ -25,9 +24,6 @@ var (
 	downloadSourceMap  = map[string]string{
 		"github":    "https://github.com/k3s-io/k3s/releases/download",
 		"aliyunoss": "https://rancher-mirror.rancher.cn/k3s",
-	}
-	client = http.Client{
-		Timeout: 45 * time.Second,
 	}
 )
 
@@ -89,6 +85,9 @@ func doRequestWithCtx(ctx context.Context, method, url string, body io.Reader) (
 	if err != nil {
 		return nil, err
 	}
+
+	client := dfClientHub.Get(url)
+
 	return client.Do(req)
 }
 

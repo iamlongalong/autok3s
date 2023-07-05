@@ -31,6 +31,10 @@ AutoK3s is a lightweight tool for simplifying the cluster management of K3s, it 
   - AUTOK3S_PROVIDERS=native,alibaba,aws,google,k3d,tencent 如这种格式
   - 默认为开放所有 providers
 
+- [x] 增加 proxy 设置，在下载 airgap 包时可使用代理下载，由环境变量控制。
+  - 采用 AUTOK3S_PROXY=domain:proxy,domain:proxy 格式
+  - 例如 AUTOK3S_PROXY=github.com:socks5://127.0.0.1:1080,xxx.xx.com:http://127.0.0.1:1087
+
 修复了如下问题:
 
 - [x] fix cluster 无 PublicIPAddress 时访问越界崩溃问题，使用 InternalIPAddress 替代
