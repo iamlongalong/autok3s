@@ -73,6 +73,8 @@ func NewSSHDialer(n *types.Node, timeout bool, logger *logrus.Logger) (*SSHDiale
 	// IP addresses are preferred.
 	if len(n.PublicIPAddress) > 0 {
 		d.sshAddress = fmt.Sprintf("%s:%s", n.PublicIPAddress[0], n.SSHPort)
+	} else if len(n.InternalIPAddress) > 0 {
+		d.sshAddress = fmt.Sprintf("%s:%s", n.InternalIPAddress[0], n.SSHPort)
 	} else {
 		d.sshAddress = n.InstanceID
 	}
