@@ -75,7 +75,7 @@ func init() {
 			continue
 		}
 
-		proxyStrSlis := strings.Split(proxyMatchersStr, ":")
+		proxyStrSlis := strings.SplitN(proxyMatchersStr, ":", 2)
 		if len(proxyStrSlis) != 2 {
 			logrus.Warn(fmt.Sprintf("invalid proxy matcher format: %s", proxyMatchersStr))
 			continue
