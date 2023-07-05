@@ -89,7 +89,7 @@ func init() {
 			continue
 		}
 
-		proxyStr, domainStr := proxyStrSlis[0], proxyStrSlis[1]
+		domainStr, proxyStr := proxyStrSlis[0], proxyStrSlis[1]
 		if strings.TrimSpace(proxyStr) == "" || strings.TrimSpace(domainStr) == "" {
 			logrus.Warn(fmt.Sprintf("invalid proxy matcher format: %s", proxyMatchersStr))
 			continue
