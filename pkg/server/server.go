@@ -1,7 +1,10 @@
 package server
 
 import (
+	"crypto/md5"
 	"net/http"
+	"os"
+	"strings"
 
 	"github.com/cnrancher/autok3s/pkg/server/proxy"
 	"github.com/cnrancher/autok3s/pkg/server/ui"
@@ -42,6 +45,7 @@ func Start() http.Handler {
 		responsewriter.CacheMiddleware("json", "js", "css", "svg", "png", "woff", "woff2"),
 		ui.ServeNotFound,
 		ui.ServeJavascript,
+		AuthMiddleware,
 	}
 	router.PathPrefix("/ui/").Handler(middleware.Handler(http.StripPrefix("/ui/", ui.Serve())))
 
@@ -82,4 +86,53 @@ func Start() http.Handler {
 	})
 
 	return router
+}
+
+func AuthMiddleware(next http.Handler) http.Handler {
+	auths := map[string]string{}
+
+	envs := os.Environ()
+	for _, envStr := range envs {
+		parts := strings.SplitN(envStr, "=", 2)
+		if len(parts) != 2 {
+			continue
+		}
+		key := parts[0]
+		value := parts[1]
+		if strings.HasPrefix(key, "AUTH_") {
+			auths[strings.TrimPrefix(key, "AUTH_")] = value
+		}
+	}
+
+	authToggle := os.Getenv("AUTOK3S_AUTH_TOGGLE")
+
+	// use open_the_door md5 sum to aviod simple hack
+	checksum := md5.New().Sum([]byte("open_the_door"))
+
+	shouldSkipAuth := authToggle == string(checksum)
+
+	magicSalt := "openit_"
+
+	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
+
+		if !shouldSkipAuth {
+			uname, passwd, ok := r.BasicAuth()
+			if !ok {
+				rw.Header().Set("WWW-Authenticate", `Basic realm="Restricted"`)
+				rw.WriteHeader(http.StatusUnauthorized)
+				return
+			}
+
+			passwd = string(md5.New().Sum([]byte(magicSalt + passwd)))
+
+			pass, ok := auths[uname]
+			if !ok || pass != passwd {
+				rw.Header().Set("WWW-Authenticate", `Basic realm="Restricted"`)
+				rw.WriteHeader(http.StatusUnauthorized)
+				return
+			}
+		}
+
+		next.ServeHTTP(rw, r)
+	})
 }
