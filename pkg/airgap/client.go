@@ -33,9 +33,15 @@ func (ch *clientHub) Set(m matcher, c http.Client) {
 	}{c: c, m: m})
 }
 
-func (ch *clientHub) Get(url string) http.Client {
+func (ch *clientHub) Get(urlstr string) http.Client {
+	u, err := url.Parse(urlstr)
+	if err != nil {
+		return defaultClient
+	}
+
 	for _, client := range ch.clients {
-		if client.m.Match(url) {
+		if client.m.Match(u.Host) {
+			logrus.Infof("matched domain: %s", urlstr)
 			return client.c
 		}
 	}
