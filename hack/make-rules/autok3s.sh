@@ -67,7 +67,8 @@ function build() {
   autok3s::log::info "building autok3s(${GIT_VERSION},${GIT_COMMIT},${GIT_TREE_STATE},${BUILD_DATE})..."
   # TODO default k3s version in k3d should also get from k3d in
   local K3D_VERSION=`go list -m all | grep k3d/v5 | awk '{print $2}'`
-  local K3S_TAG=`curl --silent --retry 3 "https://update.k3s.io/v1-release/channels/stable" | egrep -o '/v[^ ]+"' | sed -E 's/\/|\"//g' | sed -E 's/\+/\-/'`
+  # local K3S_TAG=`curl --silent --retry 3 "https://update.k3s.io/v1-release/channels/stable" | egrep -o '/v[^ ]+"' | sed -E 's/\/|\"//g' | sed -E 's/\+/\-/'`
+  local K3S_TAG=v1.27.3-k3s1
 
   local version_flags="
     -X main.gitVersion=${GIT_VERSION}
