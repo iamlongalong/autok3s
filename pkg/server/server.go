@@ -2,6 +2,7 @@ package server
 
 import (
 	"crypto/md5"
+	"encoding/hex"
 	"net/http"
 	"os"
 	"strings"
@@ -117,16 +118,15 @@ func AuthMiddleware(next http.Handler) http.Handler {
 
 		if !shouldSkipAuth {
 			uname, passwd, ok := r.BasicAuth()
-			if !ok {
-				rw.Header().Set("WWW-Authenticate", `Basic realm="Restricted"`)
-				rw.WriteHeader(http.StatusUnauthorized)
-				return
-			}
 
-			passwd = string(md5.New().Sum([]byte(magicSalt + passwd)))
+			md5sum := md5.New()
+			md5sum.Write([]byte(magicSalt + passwd))
 
-			pass, ok := auths[uname]
-			if !ok || pass != passwd {
+			tarpasswd := hex.EncodeToString(md5sum.Sum(nil))
+
+			pass := auths[uname]
+			if !ok || pass != tarpasswd {
+				// logrus.Warnf("auth fail, username: %s, pass: %s, tarPass: %s, shouldPass: %s", uname, passwd, tarpasswd, pass)
 				rw.Header().Set("WWW-Authenticate", `Basic realm="Restricted"`)
 				rw.WriteHeader(http.StatusUnauthorized)
 				return
