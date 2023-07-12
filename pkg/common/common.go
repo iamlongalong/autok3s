@@ -2,7 +2,9 @@ package common
 
 import (
 	"context"
+	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/cnrancher/autok3s/pkg/utils"
@@ -10,7 +12,7 @@ import (
 	"k8s.io/apimachinery/pkg/util/wait"
 )
 
-const (
+var (
 	// KubeCfgFile default kube config file path.
 	KubeCfgFile = ".kube/config"
 	// KubeCfgTempName default temp kube config file name prefix.
@@ -46,6 +48,19 @@ const (
 	// DBFile default database file.
 	DBFile = "autok3s.db"
 )
+
+func init() {
+	// 根据环境变量设置 MasterInstanceName 和 WorkerInstanceName
+	MasterInstanceName = strings.TrimSpace(os.Getenv("AUTOK3S_MASTER_INSTANCE_NAME"))
+	if MasterInstanceName == "" {
+		MasterInstanceName = "autok3s.%s.master"
+	}
+
+	WorkerInstanceName = strings.TrimSpace(os.Getenv("AUTOK3S_WORKER_INSTANCE_NAME"))
+	if WorkerInstanceName == "" {
+		WorkerInstanceName = "autok3s.%s.worker"
+	}
+}
 
 var (
 	// IsCLI means that you are not running serve command.

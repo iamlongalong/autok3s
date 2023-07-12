@@ -35,6 +35,9 @@ AutoK3s is a lightweight tool for simplifying the cluster management of K3s, it 
   - 采用 AUTOK3S_PROXY=domain:proxy,domain:proxy 格式
   - 例如 AUTOK3S_PROXY=github.com:socks5://127.0.0.1:1080,xxx.xx.com:http://127.0.0.1:1087
 
+- [x] 增加环境变量设置 instance name 格式 (有些云厂商的监控可以指定前缀匹配)
+  - eg: AUTOK3S_MASTER_INSTANCE_NAME="%s.k3s.master"  AUTOK3S_WORKER_INSTANCE_NAME="%s.k3s.worker"
+
 修复了如下问题:
 
 - [x] fix cluster 无 PublicIPAddress 时访问越界崩溃问题，使用 InternalIPAddress 替代
